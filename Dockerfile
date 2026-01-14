@@ -2,7 +2,7 @@
 FROM python:3.12-slim
 
 # рабочая директория
-WORKDIR /Users/aleksandrnikulin/work/UII/Ai Neuro Reception Bot
+WORKDIR /app
 
 COPY requirements.txt ./
 

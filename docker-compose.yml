@@ -8,5 +8,5 @@
     environment:
       - PYTHONUNBUFFERED=1 # Для отображения логов в реальном времени
     volumes:
-      - /Users/aleksandrnikulin/work/UII/Ai Neuro Reception Bot:/proj/ai_neuro_reception_bot
+      - .:/app
     restart: unless-stopped
