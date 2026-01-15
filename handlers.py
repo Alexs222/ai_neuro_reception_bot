@@ -3,18 +3,12 @@ from aiogram import Bot, Router, F
 from aiogram.filters import Command
 from aiogram.types import InlineKeyboardMarkup
 from aiogram.types import InlineKeyboardButton as IKB
-from libs import answer_db_index, create_db_index, load_db_index
+from libs import answer_ai, system
 import logging
 import os
 from dotenv import load_dotenv
 load_dotenv()
 
-
-# Если векторная база еще не создана:
-if not os.path.exists('db_index.faiss'):
-    create_db_index(os.getenv("DATA_DOC_URL"))
-    logging.info(f"create_db_index() - OK")
-db_index = load_db_index('db_index')
 
 router = Router()
 dict_memory = dict()  # Словарь для сохранения истории переписки
@@ -59,7 +53,7 @@ async def set_menu_button(bot: Bot):
 @router.message(Command('start'))
 async def cmd_start(message: Message):
     await clear_memory(message.from_user.id)
-    await message.answer("Задайте вопрос по ТЕХНИЧЕСКОМУ РЕГЛАМЕНТУ ТАМОЖЕННОГО СОЮЗА 'О БЕЗОПАСНОСТИ ЖЕЛЕЗНОДОРОЖНОГО ПОДВИЖНОГО СОСТАВА'")
+    await message.answer("Задавайте вопросы по теме контент-менеджмента. Помогу Вам разобраться!'")
 
 
 # Обработка текстового сообщения от пользователя
@@ -73,9 +67,9 @@ async def handle_dialog(message: Message):
     history = f"{dict_memory.get(f'{message.from_user.id}', '')}"
 
     # Запрос к OpenAI
-    response = await answer_db_index(
-        'Ответь подробно на основании информации из базы знаний. Не придумывай ничего от себя',
-        f"История переписки: \n{history} \n\nЗапрос: \n{message.text}", db_index)
+    response = await answer_ai(
+        system,
+        f"История переписки: \n{history} \n\nЗапрос: \n{message.text}")
 
     await message.answer(response)
     await message.answer("Задайте уточняющий вопрос или очистите память перед следующим запросом",
